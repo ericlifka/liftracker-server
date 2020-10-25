@@ -1,13 +1,13 @@
-import { action, Controller } from "./controller";
+import { Controller, get } from "./controller";
 import { User } from "../models/User";
 
 
 export class UserController extends Controller {
 
-  prefix: '/user'
+  prefix = '/user'
 
-  @action('/:id')
-  async GET(ctx) {
+  @get('/:id')
+  async find(ctx) {
     const { id } = ctx.params
     const user = await User.findOne(id)
 

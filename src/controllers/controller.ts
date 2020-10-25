@@ -2,18 +2,20 @@ import Router from '@koa/router'
 
 
 const def = str => str || ""
-const buildUrl = (prefix, url) => (def(prefix) + def(url)) || "/"
+const buildUrl = (root, prefix, url) => (def(root) + def(prefix) + def(url)) || "/"
 
 export class Controller {
 
   router: Router
   prefix: string
 
-  constructor() {
+  constructor(public rootPrefix: string) {
     this.router = new Router()
   }
 
   routes() {
+    console.log(`\n${this.constructor.name} attaching urls:`)
+
     for (let prop in this) {
       const handler: Function | unknown = this[prop]
       if ( handler &&
@@ -21,7 +23,13 @@ export class Controller {
            handler['actionParams'] )
       {
         const { url, method } = handler['actionParams']
-        this.router[method](buildUrl(this.prefix, url), handler.bind(this))
+        const  fullUrl = buildUrl(this.rootPrefix, this.prefix, url)
+        this.router[method](fullUrl, (...args) => {
+          console.log(`${method.toUpperCase()}:${fullUrl} - ${this.constructor.name}:${prop}()`)
+          handler.call(this, ...args)
+        })
+
+        console.log(`  ${method.toUpperCase()}:${fullUrl}`)
       }
     }
 
@@ -41,8 +49,3 @@ export const get = actionDecorator('get')
 export const put = actionDecorator('put')
 export const patch = actionDecorator('patch')
 export const del = actionDecorator('del')
-
-export const action = (url?) =>
-  (target, prop, descriptor) => {
-    target[prop].actionParams = {url, method: prop.toLowerCase()}
-  }

@@ -8,6 +8,7 @@ import { HomeController } from './controllers/home'
 import { AuthController } from './controllers/auth'
 import { UserController } from './controllers/user'
 
+const apiPrefix = '/api'
 
 export async function startServer(port) {
   const app = new Koa()
@@ -16,12 +17,12 @@ export async function startServer(port) {
   app.use(bodyParser())
 
   // open routes
-  app.use(new AuthController().routes())
+  app.use(new AuthController(apiPrefix).routes())
+  app.use(new HomeController(apiPrefix).routes())
 
   // authed routes
   app.use(jwt({ secret: ':LDKfasdf' /* move */ }))
-  app.use(new HomeController().routes())
-  app.use(new UserController().routes())
+  app.use(new UserController(apiPrefix).routes())
 
   await createConnection()
   await app.listen(port)
