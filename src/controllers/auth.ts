@@ -9,13 +9,11 @@ export class AuthController extends Controller {
   @post('/register')
   async register(ctx) {
     let { username, password } = ctx.request.body
-    let hashedPass = await argon2.hash(password)
-
-    const user = new User()
-    user.username = username
-    user.password = hashedPass
 
     try {
+      const user = new User()
+      user.username = username
+      user.password = await argon2.hash(password)
       await user.save()
 
       ctx.body = { user: user.serialize() }

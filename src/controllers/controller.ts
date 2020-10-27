@@ -24,12 +24,12 @@ export class Controller {
       {
         const { url, method } = handler['actionParams']
         const  fullUrl = buildUrl(this.rootPrefix, this.prefix, url)
+        console.log(`  ${method.toUpperCase()}:${fullUrl}`)
+
         this.router[method](fullUrl, (...args) => {
           console.log(`${method.toUpperCase()}:${fullUrl} - ${this.constructor.name}:${prop}()`)
-          handler.call(this, ...args)
+          return handler.call(this, ...args)
         })
-
-        console.log(`  ${method.toUpperCase()}:${fullUrl}`)
       }
     }
 
