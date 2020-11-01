@@ -10,6 +10,12 @@ export class AuthController extends Controller {
   async register(ctx) {
     let { username, password } = ctx.request.body
 
+    if (!username || !password) {
+      ctx.body = { error: "Must provide username and password" }
+      ctx.status = 400
+      return
+    }
+
     try {
       const user = new User()
       user.username = username
@@ -20,7 +26,7 @@ export class AuthController extends Controller {
       ctx.status = 201
 
     } catch (error) {
-      ctx.body = { error }
+      ctx.body = { error: "Username unavailable" }
       ctx.status = 400
     }
   }
@@ -28,6 +34,13 @@ export class AuthController extends Controller {
   @post('/login')
   async login(ctx) {
     let { username, password } = ctx.request.body
+
+    if (!username || !password) {
+      ctx.body = { error: "Must provide username and password" }
+      ctx.status = 400
+      return
+    }
+
     let user = await User.findOne({ username })
 
     if (!user || !await argon2.verify(user.password, password)) {
