@@ -16,10 +16,18 @@ export class User extends BaseEntity {
   @OneToMany(() => Lift, lift => lift.user)
   lifts: Lift[]
 
-  serialize() {
-    return {
-      id: this.id,
-      username: this.username
-    }
-  }
 }
+
+export const createUser = ({ username, password }) => {
+  let user = new User()
+
+  user.username = username
+  user.password = password
+
+  return user
+}
+
+export const serializeUser = user => ({
+  id: user.id,
+  username: user.username
+})

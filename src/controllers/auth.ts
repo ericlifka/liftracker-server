@@ -1,7 +1,7 @@
 import argon2 from 'argon2'
 import { Controller, post } from './controller'
 import { generateToken } from "../helpers/generate-token";
-import { User } from "../models/User";
+import { User, createUser, serializeUser } from "../models/User";
 
 
 export class AuthController extends Controller {
@@ -17,12 +17,13 @@ export class AuthController extends Controller {
     }
 
     try {
-      const user = new User()
-      user.username = username
-      user.password = await argon2.hash(password)
+      const user = createUser({
+        username,
+        password: await argon2.hash(password)
+      })
       await user.save()
 
-      ctx.body = { user: user.serialize() }
+      ctx.body = { user: serializeUser(user) }
       ctx.status = 201
 
     } catch (error) {
@@ -49,7 +50,7 @@ export class AuthController extends Controller {
     }
     else {
       ctx.body = {
-        user: user.serialize(),
+        user: serializeUser(user),
         token: generateToken(user)
       }
     }
