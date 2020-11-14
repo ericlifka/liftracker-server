@@ -7,6 +7,7 @@ import { createConnection } from "typeorm"
 import { HomeController } from './controllers/home'
 import { AuthController } from './controllers/auth'
 import { UserController } from './controllers/user'
+import { LiftController } from './controllers/lift'
 
 const apiPrefix = '/api'
 
@@ -23,6 +24,7 @@ export async function startServer(port) {
   // authed routes
   app.use(jwt({ secret: ':LDKfasdf' /* move */ }))
   app.use(new UserController(apiPrefix).routes())
+  app.use(new LiftController(apiPrefix).routes())
 
   await createConnection()
   await app.listen(port)

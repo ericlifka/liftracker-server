@@ -1,17 +1,20 @@
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from "typeorm";
-
+import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm"
+import { Lift } from "./Lift"
 
 @Entity()
 export class User extends BaseEntity {
 
   @PrimaryGeneratedColumn()
-  id: number;
+  id: number
 
   @Column({ unique: true })
-  username: string;
+  username: string
 
   @Column()
-  password: string;
+  password: string
+
+  @OneToMany(() => Lift, lift => lift.user)
+  lifts: Lift[]
 
   serialize() {
     return {
